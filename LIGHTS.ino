@@ -46,7 +46,7 @@ uint8_t clockPin = 3;    // Green wire on Adafruit Pixels
 SoftwareSerial nss(ssRX, ssTX);
 
 XBee xbee = XBee();
-
+  
 ZBRxIoSampleResponse ioSample = ZBRxIoSampleResponse();
 
 XBeeAddress64 test = XBeeAddress64();
@@ -92,12 +92,21 @@ void loop() {
       // read analog inputs
       for (int i = 0; i <= 4; i++) {
         if (ioSample.isAnalogEnabled(i)) {
-          Serial.println(ioSample.getAnalog(i), DEC);
+          Serial.println(ioSample.getAnalog(1)/4, DEC);
           
-          for (i=0; i < 20; i++) {
-            strip.setPixelColor(i, ioSample.getAnalog(1)/4);
-            strip.show();
+          int value = ioSample.getAnalog(1)/4;
+          
+          Serial.println((255-value)*100/256, DEC);
+          Serial.println((255-value)*100/223, DEC);
+          Serial.println();
+          
+          for (i=0; i < 21; i++) {
+            strip.setPixelColor(i,Color((255-value)*100/256,(255-value)*100/223,0));
+
           }
+          
+          strip.show();
+
           
           nss.print("Analog (AI");
           nss.print(i, DEC);
@@ -132,4 +141,16 @@ void loop() {
     nss.print("Error reading packet.  Error code: ");  
     nss.println(xbee.getResponse().getErrorCode());
   }
+}
+
+// Create a 24 bit color value from R,G,B
+uint32_t Color(byte r, byte g, byte b)
+{
+  uint32_t c;
+  c = r;
+  c <<= 8;
+  c |= g;
+  c <<= 8;
+  c |= b;
+  return c;
 }
