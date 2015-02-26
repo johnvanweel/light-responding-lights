@@ -39,31 +39,34 @@ void loop() {
   xbee.readPacket();
 
   if (xbee.getResponse().isAvailable()) {
+    
     // Received a sample from a remote xBee
     if (xbee.getResponse().getApiId() == ZB_IO_SAMPLE_RESPONSE) {
       xbee.getResponse().getZBRxIoSampleResponse(ioSample);
 
       // read analog inputs, there could be up to 4
-      for (int i = 0; i <= 4; i++) {
-        if (ioSample.isAnalogEnabled(i)) {
-          Serial.println(ioSample.getAnalog(i)/4, DEC);
-          
-          // xBee values range 0-1024, I need a 0-256 range for the pixels
-          int value = ioSample.getAnalog(i)/4;
+      if (ioSample.isAnalogEnabled(1)) {
+        Serial.println(ioSample.getAnialog(1)/4, DEC);
 
-          Serial.println((255-value)*100/256, DEC);
-          Serial.println((255-value)*100/223, DEC);
-          Serial.println();
+        // xBee values range 0-1024, I need a 0-256 range for the pixels
+        int value = 256-(ioSample.getAnalog(1)/4);
+        Serial.println(value, DEC);
 
-          // Set all the pixels to the same color (255, 223,0)
-          for (i=0; i < 21; i++) {
-            strip.setPixelColor(i,Color((255-value)*100/256,(255-value)*100/223,0));
-          }
+        int valuePerc = value * 100 / 256;
 
-          // Send the data to the strip
-          strip.show();
+        Serial.println(valuePerc*256/100, DEC);
+        Serial.println(valuePerc*223/100, DEC);
+        Serial.println();
+
+        // Set all the pixels to the same color (255, 223,0)
+        for (int i=0; i < 21; i++) {
+          strip.setPixelColor(i,Color(valuePerc*256/100,valuePerc*223/100,0));
         }
+
+        // Send the data to the strip
+        strip.show();
       }
+
     }    
   } 
 }
@@ -79,4 +82,5 @@ uint32_t Color(byte r, byte g, byte b)
   c |= b;
   return c;
 }
+
 
