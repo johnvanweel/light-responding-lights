@@ -3,6 +3,7 @@
 #include <XBee.h>
 #include <SoftwareSerial.h>
 
+
 // Define NewSoftSerial TX/RX pins
 // Connect Arduino pin 8 to TX of usb-serial device
 uint8_t ssRX = 8;
